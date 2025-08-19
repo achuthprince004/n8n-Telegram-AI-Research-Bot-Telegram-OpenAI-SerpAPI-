@@ -1,4 +1,5 @@
 # 📡 AI Research Assistant (Telegram + OpenAI + SerpAPI)
+<img width="1912" height="975" alt="Screenshot 2025-08-19 204726" src="https://github.com/user-attachments/assets/6a07bbe0-60e8-47eb-9975-4e454e3cced4" />
 
 ## 🚀 Overview
 This project is an **AI-powered research assistant** built using **n8n** 
