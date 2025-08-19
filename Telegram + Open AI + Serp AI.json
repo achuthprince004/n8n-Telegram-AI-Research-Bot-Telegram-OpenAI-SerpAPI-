@@ -1,0 +1,170 @@
+{
+  "name": "Telegram + Open AI + Serp AI",
+  "nodes": [
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "={{ $json.message.text }} ",
+        "options": {
+          "systemMessage": "=You are a research assistant with access to real-time search results provided by SerpAPI. You must always base your answers exclusively on the information retrieved from SerpAPI—never speculate or guess.\n\nFor every user query, you will receive structured results including titles, snippets, prices, images, and links.\n\nYour job is to:\n- Carefully analyze the SerpAPI results\n- Identify the most relevant and helpful information\n- Summarize or compare the top 2–3 options clearly and concisely\n- Include: product name, short description, price (if available), link, and image URL (if available)\n\nFormat the response in a user-friendly, readable style—using bullets or emojis to improve clarity. Always include direct links and image URLs if they are provided in the search data.\n\nIf no useful results are found, say so transparently.\n\nDo not generate information outside of what SerpAPI returns. Your role is to process, summarize, and organize real web search data—nothing more.\n"
+        }
+      },
+      "id": "09271ba5-f172-4463-a56e-e68c6509624e",
+      "name": "Research AI Agent",
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "position": [
+        1760,
+        944
+      ],
+      "typeVersion": 2
+    },
+    {
+      "parameters": {
+        "model": {
+          "__rl": true,
+          "mode": "list",
+          "value": "gpt-4o-mini",
+          "cachedResultName": "gpt-4o-mini"
+        },
+        "options": {}
+      },
+      "id": "34c0f954-121a-44cd-af1b-eda624d4e05a",
+      "name": "OpenAI Chat Model",
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "position": [
+        1744,
+        1184
+      ],
+      "typeVersion": 1.2,
+      "credentials": {
+        "openAiApi": {
+          "id": "mRO7JPDR7dg4M5rI",
+          "name": "OpenAi account 2"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "id": "d1fcc1af-f669-42b7-9886-b59e3fd08f1c",
+      "name": "SerpAPI",
+      "type": "@n8n/n8n-nodes-langchain.toolSerpApi",
+      "position": [
+        1968,
+        1184
+      ],
+      "typeVersion": 1,
+      "credentials": {
+        "serpApi": {
+          "id": "5wELEHTpDlol2uvN",
+          "name": "SerpAPI account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "updates": [
+          "message",
+          "*"
+        ],
+        "additionalFields": {}
+      },
+      "id": "be7af2e5-f78e-4354-9f37-3eaa4a47fd35",
+      "name": "Telegram Trigger",
+      "type": "n8n-nodes-base.telegramTrigger",
+      "position": [
+        1440,
+        880
+      ],
+      "webhookId": "3e00a8f3-50f1-4b71-9af3-f06813efd5e5",
+      "typeVersion": 1.2,
+      "credentials": {
+        "telegramApi": {
+          "id": "QwpjZqc8gSwHi6h3",
+          "name": "Telegram account 3"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "chatId": "={{ $('Telegram Trigger').item.json.message.chat.id }}",
+        "text": "={{ $json.output }}",
+        "additionalFields": {
+          "appendAttribution": false
+        }
+      },
+      "id": "c9d87edb-252b-4dc9-9d1b-67d5aeeb4e38",
+      "name": "Send a text message",
+      "type": "n8n-nodes-base.telegram",
+      "position": [
+        2208,
+        848
+      ],
+      "webhookId": "c933873b-ee2d-48ad-a3d9-24f238083a64",
+      "typeVersion": 1.2,
+      "credentials": {
+        "telegramApi": {
+          "id": "QwpjZqc8gSwHi6h3",
+          "name": "Telegram account 3"
+        }
+      }
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "SerpAPI": {
+      "ai_tool": [
+        [
+          {
+            "node": "Research AI Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Telegram Trigger": {
+      "main": [
+        [
+          {
+            "node": "Research AI Agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenAI Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Research AI Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Research AI Agent": {
+      "main": [
+        [
+          {
+            "node": "Send a text message",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {},
+  "versionId": "41bc808b-80ba-4af9-9855-e001ee62bd4e",
+  "meta": {
+    "templateId": "5924",
+    "instanceId": "99b2e3e1780cc306bad1a5a62d96958b12c400edaead58190abd65ecdbb44c87"
+  },
+  "id": "qhk5Eb4A8FLqb89C",
+  "tags": []
+}
